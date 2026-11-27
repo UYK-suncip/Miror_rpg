@@ -113,7 +113,7 @@ function update(dt){if(paused||ended)return;elapsed+=dt;for(const k in cd)cd[k]=
   const duration=boss.attack===0?.48:boss.attack===1?1.12:.82,progress=clamp(1-boss.timer/duration,0,1),angle=boss.baseAngle||0;
   if(boss.attack===0){const dx=player.x-boss.x,dy=player.y-boss.y,len=Math.hypot(dx,dy)||1;boss.x+=dx/len*245*dt;boss.y+=dy/len*245*dt;if(!boss.hit&&Math.hypot(player.x-boss.x,player.y-boss.y)<58){damagePlayer(18);boss.hit=true}}
   if(!boss.hit&&boss.attack===1){const sweep=-1.38+progress*2.76,pa=Math.atan2(player.y-boss.y,player.x-boss.x),delta=Math.atan2(Math.sin(pa-(angle+sweep)),Math.cos(pa-(angle+sweep))),dist=Math.hypot(player.x-boss.x,player.y-boss.y);if(dist<clamp(W*.43,280,430)&&Math.abs(delta)<.24&&progress>.12){damagePlayer(16);boss.hit=true}}
-  if(!boss.hit&&boss.attack===2){const len=clamp(W*.48,320,490),dx=player.x-boss.x,dy=player.y-boss.y,along=dx*Math.cos(angle)+dy*Math.sin(angle),side=Math.abs(-dx*Math.sin(angle)+dy*Math.cos(angle));if(along>28&&along<len&&side<68&&progress>.12){damagePlayer(20);boss.hit=true}}
+  if(!boss.hit&&boss.attack===2){const fullLen=clamp(W*.55,360,520),extend=progress<.55?progress/.55:1-(progress-.55)*.42,reach=fullLen*clamp(extend,0,1),dx=player.x-boss.x,dy=player.y-boss.y,along=dx*Math.cos(angle)+dy*Math.sin(angle),side=Math.abs(-dx*Math.sin(angle)+dy*Math.cos(angle));if(along>34&&along<reach&&side<78&&progress>.12){damagePlayer(20);boss.hit=true}}
   if(boss.timer<=0){boss.state='idle';boss.timer=1.15+Math.random()*1.05}
  }
  }
