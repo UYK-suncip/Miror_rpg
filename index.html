@@ -65,7 +65,7 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-acti
 (()=>{'use strict';
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false}),game=document.getElementById('game');
 const bgCanvas=document.createElement('canvas'),bgCtx=bgCanvas.getContext('2d',{alpha:false});
-const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad-24f.svg?v=7';wardenSprite.onerror=()=>console.error('Warden sprite sheet failed to load:',wardenSprite.src);
+const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad-faithful-24f.svg?v=1';wardenSprite.onerror=()=>console.error('Warden sprite sheet failed to load:',wardenSprite.src);
 const skillLayers={q:new Image(),e:new Image(),r:new Image()};
 for(const k of ['q','e','r']){skillLayers[k].src='./assets/skill-'+k+'-24.svg';skillLayers[k].onerror=()=>console.error('Player skill sprite failed:',k)}
 const skillAnims={q:null,e:null,r:null};
@@ -147,7 +147,7 @@ function drawWarden(){
   else frame=21+Math.min(1,Math.floor(t*2));
  }else if(active){
   if(boss.attack===1)frame=9+Math.min(5,Math.floor(t*6));
-  else if(boss.attack===2)frame=17+Math.min(3,Math.floor(t*4));
+  else if(boss.attack===2)frame=17+Math.min(5,Math.floor(t*6));
   else frame=22+Math.min(1,Math.floor(t*2));
  }
  const col=frame%6,row=Math.floor(frame/6),cellW=256,cellH=384;
