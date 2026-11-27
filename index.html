@@ -65,7 +65,7 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-acti
 (()=>{'use strict';
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false}),game=document.getElementById('game');
 const bgCanvas=document.createElement('canvas'),bgCtx=bgCanvas.getContext('2d',{alpha:false});
-const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad-24f.svg?v=5';wardenSprite.onerror=()=>console.error('Warden sprite sheet failed to load:',wardenSprite.src);
+const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad-24f.svg?v=6';wardenSprite.onerror=()=>console.error('Warden sprite sheet failed to load:',wardenSprite.src);
 const skillLayers={q:new Image(),e:new Image(),r:new Image()};
 for(const k of ['q','e','r']){skillLayers[k].src='./assets/skill-'+k+'-24.svg';skillLayers[k].onerror=()=>console.error('Player skill sprite failed:',k)}
 const skillAnims={q:null,e:null,r:null};
@@ -140,16 +140,26 @@ function drawWarden(){
  const tellMax=boss.attack===1?1.22:boss.attack===2?1.05:.82;
  const attackMax=boss.attack===1?1.12:boss.attack===2?.82:.48;
  const t=tell?clamp(1-boss.timer/tellMax,0,1):active?clamp(1-boss.timer/attackMax,0,1):0;
- let frame=Math.floor(elapsed*7)%6;
- if(tell){if(boss.attack===1)frame=6+Math.min(2,Math.floor(t*3));else if(boss.attack===2)frame=15+Math.min(1,Math.floor(t*2));else frame=21+Math.min(1,Math.floor(t*2))}
- else if(active){if(boss.attack===1)frame=9+Math.min(5,Math.floor(t*6));else if(boss.attack===2)frame=17+Math.min(4,Math.floor(t*5));else frame=22+Math.min(1,Math.floor(t*2))}
+ let frame=Math.floor(elapsed*9)%6;
+ if(tell){
+  if(boss.attack===1)frame=6+Math.min(2,Math.floor(t*3));
+  else if(boss.attack===2)frame=15+Math.min(1,Math.floor(t*2));
+  else frame=21+Math.min(1,Math.floor(t*2));
+ }else if(active){
+  if(boss.attack===1)frame=9+Math.min(5,Math.floor(t*6));
+  else if(boss.attack===2)frame=17+Math.min(3,Math.floor(t*4));
+  else frame=22+Math.min(1,Math.floor(t*2));
+ }
  const col=frame%6,row=Math.floor(frame/6),cellW=256,cellH=384;
- const size=clamp(W*.48,270,440),bob=Math.sin(elapsed*3.6)*2.8;
- const squash=tell?(boss.attack===0?1-.16*t:1+.08*t):active?(boss.attack===0?1+.2*Math.sin(t*Math.PI):1+.1*Math.sin(t*Math.PI)):1;
- const stretch=tell?(boss.attack===0?1+.16*t:1-.06*t):active?(boss.attack===0?1-.17*Math.sin(t*Math.PI):1-.08*Math.sin(t*Math.PI)):1;
- const lift=active&&boss.attack===0?-Math.sin(t*Math.PI)*18:Math.sin(elapsed*3.6)*2;
- ctx.save();ctx.globalAlpha=.58;ctx.fillStyle='#020611';ctx.beginPath();ctx.ellipse(boss.x,boss.y+size*.32,size*.39,size*.085,0,0,Math.PI*2);ctx.fill();ctx.restore();
- ctx.save();ctx.translate(Math.round(boss.x),Math.round(boss.y+bob+lift));const facing=Math.atan2(player.y-boss.y,player.x-boss.x);ctx.rotate(facing-Math.PI);ctx.scale(stretch,squash);ctx.imageSmoothingEnabled=false;
+ const size=clamp(W*.51,292,470),bob=Math.sin(elapsed*3.6)*3.4;
+ const pulse=tell?Math.sin(t*Math.PI):active?Math.sin(t*Math.PI):0;
+ const squash=tell?(boss.attack===0?1-.2*t:1+.12*t):active?(boss.attack===0?1+.24*pulse:1+.15*pulse):1;
+ const stretch=tell?(boss.attack===0?1+.2*t:1-.08*t):active?(boss.attack===0?1-.2*pulse:1-.1*pulse):1;
+ const lift=active&&boss.attack===0?-pulse*22:Math.sin(elapsed*3.6)*2;
+ ctx.save();ctx.globalAlpha=.64;ctx.fillStyle='#020611';ctx.beginPath();ctx.ellipse(boss.x,boss.y+size*.34,size*.42,size*.09,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ ctx.save();ctx.translate(Math.round(boss.x),Math.round(boss.y+bob+lift));
+ const facing=Math.atan2(player.y-boss.y,player.x-boss.x);
+ ctx.rotate(facing-Math.PI);ctx.scale(stretch,squash);ctx.imageSmoothingEnabled=false;
  ctx.drawImage(wardenSprite,col*cellW,row*cellH,cellW,cellH,-size/2,-size*.52,size,size*1.5);
  ctx.imageSmoothingEnabled=true;ctx.restore();
 }
