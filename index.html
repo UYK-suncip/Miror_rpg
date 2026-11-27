@@ -143,8 +143,8 @@ function render(){ctx.save();ctx.fillStyle='#090e20';ctx.fillRect(0,0,W,H);if(bg
  for(const f of fx){ctx.save();ctx.globalAlpha=Math.max(0,f.t/.48);ctx.strokeStyle=f.color;ctx.lineWidth=4;ctx.shadowColor='transparent';ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.stroke();ctx.restore()}
  for(const s of sparks){ctx.save();ctx.globalAlpha=clamp(s.t/.35,0,1);ctx.fillStyle=s.color;ctx.fillRect(s.x,s.y,s.size,s.size);ctx.restore()}
  ctx.restore()}
-function loop(t){const dt=Math.min(.034,(t-last)/1000||0);last=t;update(dt);render();requestAnimationFrame(loop)}requestAnimationFrame(loop);
-try{render()}catch(err){console.error('Initial render failed',err)}try{render()}catch(err){console.error('Initial render failed',err)}requestAnimationFrame(loop);
+function loop(t){const dt=Math.min(.034,(t-last)/1000||0);last=t;update(dt);render();requestAnimationFrame(loop)}
+try{render()}catch(err){console.error('Initial render failed',err)}requestAnimationFrame(loop);
 })();
 </script>
 </body></html>
