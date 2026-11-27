@@ -61,10 +61,11 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-acti
  <div id="cooldowns"><span id="cq" class="cool">Q READY</span><span id="ce" class="cool">E READY</span><span id="cr" class="cool">R READY</span></div>
 </div>
 </div>
-<script>
+<script><script>
 (()=>{'use strict';
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false}),game=document.getElementById('game');
 const bgCanvas=document.createElement('canvas'),bgCtx=bgCanvas.getContext('2d',{alpha:false});
+const wardenSprite=new Image();wardenSprite.src='assets/warden-toad.png';
 const joy=document.getElementById('joy'),stick=document.getElementById('stick');
 let W=900,H=620,D=1,last=0,elapsed=0,paused=false,toastTime=0,shake=0,ended=false;
 const player={x:450,y:490,hp:100,max:100,dir:'up',speed:205,inv:0,dash:0,guard:0,attack:0};
@@ -124,30 +125,15 @@ function drawWarden(){
  if(boss.hp<=0)return;
  const hop=Math.sin(elapsed*5.2)*2.8+(boss.state==='idle'?Math.max(0,Math.sin(elapsed*2.6))*3:0);
  const sx=1+(boss.squash||0)*.20, sy=1-(boss.squash||0)*.13;
+ const w=clamp(W*.22,150,270),h=w*(wardenSprite.naturalHeight/wardenSprite.naturalWidth||.67);
  ctx.save();ctx.translate(Math.round(boss.x),Math.round(boss.y+hop));ctx.scale(sx,sy);
- // broad, low toad shadow
- ctx.fillStyle='#020611';ctx.beginPath();ctx.ellipse(0,43,91,23,0,0,Math.PI*2);ctx.fill();
- // squat, soft body with layered mottled skin
- ctx.fillStyle='#111827';ctx.beginPath();ctx.ellipse(0,2,91,72,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#303b4d';ctx.beginPath();ctx.ellipse(-4,-5,83,65,-.08,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#465267';ctx.beginPath();ctx.ellipse(-17,-25,57,31,-.18,Math.PI,Math.PI*2);ctx.fill();
- ctx.fillStyle='#252f40';ctx.beginPath();ctx.ellipse(27,20,50,39,.1,0,Math.PI*2);ctx.fill();
- for(let i=0;i<17;i++){const x=-65+(i*31%129),y=-60+((i*19)%35);ctx.fillStyle='#121a2a';ctx.beginPath();ctx.arc(x,y,3+(i%3),0,Math.PI*2);ctx.fill();ctx.fillStyle='#7d8ba0';ctx.fillRect(x-1,y-4,3,2)}
- // eye socket; pupil tracks the player's position with a restrained offset
- ctx.fillStyle='#070d1d';ctx.beginPath();ctx.ellipse(27,-20,31,39,-.18,0,Math.PI*2);ctx.fill();
- const iris=ctx.createRadialGradient(22,-27,3,27,-18,31);iris.addColorStop(0,'#b8f7ff');iris.addColorStop(.18,'#32c9ff');iris.addColorStop(.52,'#0758df');iris.addColorStop(1,'#071b60');ctx.fillStyle=iris;ctx.beginPath();ctx.ellipse(27,-19,25,32,-.18,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#020611';ctx.beginPath();ctx.ellipse(0,h*.40,w*.46,h*.10,0,0,Math.PI*2);ctx.fill();
+ if(wardenSprite.complete&&wardenSprite.naturalWidth){ctx.imageSmoothingEnabled=false;ctx.drawImage(wardenSprite,-w/2,-h*.58,w,h);ctx.imageSmoothingEnabled=true}
+ // only the pupil overlay moves; the photographed eye and skin remain the reference sprite
  const px=boss.eyeX||0,py=boss.eyeY||0;
- ctx.save();ctx.beginPath();ctx.ellipse(27,-19,21,27,-.18,0,Math.PI*2);ctx.clip();
- ctx.fillStyle='#020817';ctx.beginPath();ctx.ellipse(33+px,-20+py,11,20,-.12,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(17+px,-35+py,7,10,-.3,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#61eaff';ctx.fillRect(37+px,1+py,5,5);ctx.fillRect(29+px,7+py,4,4);ctx.restore();
- // tiny downturned mouth and side gill
- ctx.strokeStyle='#101a2b';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-65,7);ctx.quadraticCurveTo(-45,-2,-27,7);ctx.stroke();
- ctx.strokeStyle='#65738b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-78,-5);ctx.quadraticCurveTo(-91,-20,-82,-34);ctx.stroke();
- // stubby feet and blue reflection
- ctx.fillStyle='#111a2b';ctx.beginPath();ctx.ellipse(-49,59,16,9,-.3,0,Math.PI*2);ctx.ellipse(48,59,17,9,.3,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#526078';ctx.fillRect(-58,56,8,3);ctx.fillRect(43,56,8,3);
- ctx.globalAlpha=.38;ctx.fillStyle='#176bff';ctx.beginPath();ctx.ellipse(0,67,55,6,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ ctx.save();ctx.translate(w*.075,-h*.14);ctx.scale(w/220,h/147);ctx.beginPath();ctx.ellipse(27,-19,21,27,-.18,0,Math.PI*2);ctx.clip();
+ ctx.fillStyle='#020817';ctx.beginPath();ctx.ellipse(33+px,-20+py,8,14,-.12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(17+px,-35+py,4,6,-.3,0,Math.PI*2);ctx.fill();ctx.restore();
+ ctx.restore()
 }
 function drawHero(){const rows={
 down:[".....KKKKKK.....","....KHHHHHHK....","...KHHHHHHHHK...","...KHHFFFFHHK...","...KHHFFFFHHK...","....KHHHHHHK....",".....KBBBBK.....","....KBBCCBBK....","...KBBCCCCBBK...","...KBBCCCCBBK...","....KBBBBBBK....","....KBB..BBK....","...KBB....BBK...","...KK......KK...","..KSS......SSK..","..KKK......KKK.."],
