@@ -159,7 +159,7 @@ function drawWarden(){
  ctx.save();ctx.globalAlpha=.64;ctx.fillStyle='#020611';ctx.beginPath();ctx.ellipse(boss.x,boss.y+size*.34,size*.42,size*.09,0,0,Math.PI*2);ctx.fill();ctx.restore();
  ctx.save();ctx.translate(Math.round(boss.x),Math.round(boss.y+bob+lift));
  const facing=Math.atan2(player.y-boss.y,player.x-boss.x);
- ctx.rotate(facing-Math.PI);ctx.scale(stretch,squash);ctx.imageSmoothingEnabled=false;
+ ctx.rotate(facing-Math.PI/2);ctx.scale(stretch,squash);ctx.imageSmoothingEnabled=false;
  ctx.drawImage(wardenSprite,col*cellW,row*cellH,cellW,cellH,-size/2,-size*.52,size,size*1.5);
  ctx.imageSmoothingEnabled=true;ctx.restore();
 }
