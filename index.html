@@ -147,7 +147,7 @@ function drawWarden(){
 function drawWardenAttack(){
  if(boss.state!=='tell'&&boss.state!=='attack')return;
  const tell=boss.state==='tell',duration=boss.attack===1?1.12:boss.attack===2?.62:.48;
- const p=tell?0:clamp(1-boss.timer/duration,0,1),frame=Math.min(23,Math.floor((tell?.12+p*.88)*24));
+ const p=tell?0:clamp(1-boss.timer/duration,0,1),frame=Math.min(23,Math.floor(((tell?0.12:0.12+p*.88))*24));
  const img=boss.attack===1?wardenAttackSprites.eyes:wardenAttackSprites.tongue;
  if(boss.attack===0){ctx.save();ctx.translate(boss.x,boss.y);ctx.strokeStyle='#789cff';ctx.lineWidth=3;ctx.globalAlpha=tell?.5+.18*Math.sin(elapsed*13):.25;ctx.beginPath();ctx.ellipse(0,12,70+Math.sin(elapsed*15)*5,42,0,0,Math.PI*2);ctx.stroke();ctx.restore();return}
  if(!img.complete||!img.naturalWidth)return;
