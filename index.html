@@ -11,32 +11,32 @@
 canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-action:none}
 #hud{position:absolute;inset:0;pointer-events:none;text-shadow:2px 2px #030713,0 0 8px #07142d;font-weight:900}
 .panel{position:absolute;background:linear-gradient(135deg,#111b34eF,#080f24eF);border:2px solid #738dbd;border-radius:4px;box-shadow:0 4px 0 #030611, inset 0 0 18px #4164a333;padding:7px 10px}
-#playerPanel{left:12px;top:12px;width:min(260px,43vw)}
-#bossPanel{left:50%;top:12px;transform:translateX(-50%);width:min(390px,48vw);text-align:center}
+#playerPanel{left:clamp(12px,5vw,76px);top:clamp(14px,6vh,62px);width:min(255px,36vw);padding:8px 12px 8px 68px;border:0;background:transparent;box-shadow:none}\n#playerPanel:before{content:"";position:absolute;left:-52px;top:-10px;width:68px;height:68px;border-radius:50%;border:5px solid #7785aa;background:radial-gradient(circle at 40% 35%,#8295bf,#263452 65%,#080e20);box-shadow:0 0 0 3px #080d1c,0 0 0 5px #526487;z-index:1}\n#playerPanel:after{content:"";position:absolute;left:-40px;top:2px;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 50% 28%,#a2b4db,#4c5d86 58%,#131d38);border:2px solid #121b32;z-index:2;box-shadow:inset 0 -8px #10172b}
+#bossPanel{left:auto;right:clamp(16px,8vw,112px);top:clamp(14px,3vh,34px);transform:none;width:min(290px,35vw);text-align:right;padding:0 0 0 0;border:0;background:transparent;box-shadow:none}\n#bossPanel:after{content:"";position:absolute;right:-72px;top:17px;width:58px;height:58px;border:5px solid #65769c;border-radius:50%;background:radial-gradient(circle at 55% 45%,#a6f5ff 0 5%,#1a9eff 10%,#071b52 36%,#0a1020 68%);box-shadow:0 0 0 3px #080d1c,0 0 0 5px #394969,0 0 22px #247dff}
 .name{font-size:11px;letter-spacing:2px;color:#b8d7ff}
-.hpOuter{height:13px;margin-top:5px;background:#050a18;border:2px solid #7c91b5;box-shadow:inset 0 0 5px #000;overflow:hidden}
+.hpOuter{height:14px;margin-top:5px;background:#050a18;border:2px solid #7c91b5;box-shadow:inset 0 0 5px #000;overflow:hidden}
 .hpFill{height:100%;width:100%;transition:width .12s;background:linear-gradient(180deg,#a4ffdc,#24a87b 55%,#12654f)}
 #bossFill{background:linear-gradient(180deg,#ffb0c2,#e53b6b 55%,#8c1b43)}
 .hpNum{font-size:10px;color:#b6c9e9;margin-top:3px}
-#bossTitle{font-size:14px;letter-spacing:3px;color:#e9f4ff}
-#bossSub{font-size:9px;letter-spacing:2px;color:#7fa7df;margin-top:2px}
-#centerMsg{position:absolute;top:27%;left:50%;transform:translateX(-50%);font-size:clamp(12px,2vw,17px);letter-spacing:3px;color:#c8e9ff;white-space:nowrap;opacity:.82}
+#bossTitle{font-size:clamp(13px,1.8vw,20px);letter-spacing:2px;color:#f2f5ff;font-weight:1000;text-shadow:2px 2px #050816}
+#bossSub{display:none}
+#centerMsg{display:none}
 #toast{position:absolute;top:39%;left:50%;transform:translate(-50%,-50%);font-size:clamp(15px,3vw,24px);letter-spacing:3px;color:#bcecff;opacity:0;transition:opacity .15s;text-align:center;white-space:nowrap}
 #toast.show{opacity:1}
 #bottomHud{position:absolute;left:50%;bottom:15px;transform:translateX(-50%);font-size:10px;letter-spacing:2px;color:#8fa9d1;white-space:nowrap}
 #controls{position:absolute;inset:0;pointer-events:none}
 .control{pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;appearance:none;border:2px solid #a8c7f0a8;background:linear-gradient(145deg,#1c3158d9,#0a142bdc);color:#eff8ff;box-shadow:inset 0 0 15px #5a9cff3b,0 4px 10px #000a,0 0 10px #2866b544;border-radius:50%;display:grid;place-items:center;font-weight:900;text-shadow:0 2px #111;font-size:18px;padding:0;outline:none}
 .control:active,.control.down{background:linear-gradient(145deg,#4d8be8,#142c59);box-shadow:inset 0 0 18px #a5dcff99,0 0 18px #5d9cff}
-.skill{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));width:clamp(60px,14vw,82px);height:clamp(60px,14vw,82px)}
-.skill b{font-size:23px}.skill small{position:absolute;bottom:-17px;font-size:9px;white-space:nowrap;color:#b7c9e8;letter-spacing:1px}
-#q{right:calc(29% + 8px)}#e{right:calc(15% + 5px)}#r{right:14px}
-#joy{position:absolute;left:max(17px,env(safe-area-inset-left));bottom:max(22px,env(safe-area-inset-bottom));width:clamp(116px,29vw,158px);height:clamp(116px,29vw,158px);border-radius:50%;background:radial-gradient(circle,#263c637a,#101a337a 65%,#0b1328aa);border:2px solid #9bb8e58c;box-shadow:inset 0 0 22px #5b8fff35,0 0 15px #0009;pointer-events:auto;touch-action:none}
+.skill{position:absolute;bottom:max(9vh,42px);width:clamp(72px,12vw,112px);height:clamp(72px,12vw,112px);border:2px solid #aabbd8aa;background:radial-gradient(circle at 40% 32%,#35425cdd,#0a1229ee 72%);box-shadow:inset 0 0 0 4px #101a32, inset 0 0 20px #72aaff44,0 4px 10px #000b}
+.skill b{font-size:clamp(24px,3vw,34px);text-shadow:0 0 8px #b7dcff}.skill small{position:absolute;top:-13px;bottom:auto;font-size:clamp(13px,1.6vw,19px);font-weight:1000;color:#fff;text-shadow:2px 2px #050816;letter-spacing:0}
+#q{right:calc(25% + 4px)}#e{right:calc(13% + 2px)}#r{right:14px}
+#joy{position:absolute;left:clamp(22px,5vw,76px);bottom:max(7vh,35px);width:clamp(142px,18vw,220px);height:clamp(142px,18vw,220px);border-radius:50%;background:radial-gradient(circle,#25355088,#101a337a 65%,#0b1328aa);border:3px solid #b6c7e18c;box-shadow:inset 0 0 22px #b8d7ff22,0 0 15px #0009;pointer-events:auto;touch-action:none}
 #joy:before{content:"";position:absolute;inset:13%;border:1px dashed #91b5e54a;border-radius:50%}
-#stick{position:absolute;left:50%;top:50%;width:42%;height:42%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#e0f3ffb8,#7eaae88a 55%,#2c4f80c9);border:2px solid #d7e9ffb8;box-shadow:0 0 18px #6bafff66;pointer-events:none}
+#stick{position:absolute;left:50%;top:50%;width:40%;height:40%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#c7d8edaa,#7185a6aa 55%,#344563dd);border:3px solid #c5d5e8b8;box-shadow:0 0 18px #6bafff66;pointer-events:none}
 #pause{position:absolute;right:13px;top:90px;width:38px;height:38px;border-radius:7px;font-size:15px}
 #cooldowns{position:absolute;right:14px;bottom:calc(max(24px,env(safe-area-inset-bottom)) + 87px);display:flex;gap:8px;pointer-events:none}
 .cool{font-size:9px;color:#d5e5ff;background:#091329c9;border:1px solid #718db9;padding:3px 5px;min-width:35px;text-align:center}
-@media(orientation:landscape){#playerPanel{width:190px}#bossPanel{width:min(330px,42vw)}#joy{width:116px;height:116px}.skill{width:64px;height:64px}#q{right:calc(29% + 3px)}#pause{top:13px}}
+@media(orientation:landscape){#playerPanel{width:230px}#bossPanel{width:245px}#joy{width:150px;height:150px}.skill{width:82px;height:82px}#q{right:calc(25% + 4px)}#pause{top:13px}}
 @media(max-width:560px){#playerPanel{width:36vw;padding:6px}#bossPanel{width:48vw;padding:6px}#bossTitle{font-size:11px}#bossSub{font-size:8px}.name{font-size:9px}#playerPanel .hpOuter{height:11px}#centerMsg{top:24%}#bottomHud{display:none}}
 </style>
 </head>
@@ -44,15 +44,15 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-acti
 <div id="game">
 <canvas id="c"></canvas>
 <div id="hud">
- <div id="playerPanel" class="panel"><div class="name">✦ WAYFARER</div><div class="hpOuter"><div id="playerFill" class="hpFill"></div></div><div id="playerNum" class="hpNum">VITALITY 100 / 100</div></div>
- <div id="bossPanel" class="panel"><div id="bossTitle">THE WARDEN</div><div id="bossSub">KEEPER OF THE BLUE RIFT</div><div class="hpOuter"><div id="bossFill" class="hpFill"></div></div><div id="bossNum" class="hpNum">300 / 300</div></div>
+ <div id="playerPanel" class="panel"><div class="name">HP&nbsp; 100 / 100</div><div class="hpOuter"><div id="playerFill" class="hpFill"></div></div><div id="playerNum" class="hpNum">VITALITY 100 / 100</div></div>
+ <div id="bossPanel" class="panel"><div id="bossTitle">THE WARDEN</div><div class="hpOuter"><div id="bossFill" class="hpFill"></div></div><div id="bossNum" class="hpNum">300 / 300</div></div>
  <div id="centerMsg">푸른 균열의 수호자</div><div id="toast"></div><div id="bottomHud">WASD / ARROWS · Q DASH · E SHOCKWAVE · R COUNTER</div>
 </div>
 <div id="controls">
  <div id="joy"><div id="stick"></div></div>
- <button id="q" class="control skill" aria-label="Q 돌진 베기"><b>Q</b><small>35 DMG</small></button>
- <button id="e" class="control skill" aria-label="E 충격파"><b>E</b><small>25 DMG</small></button>
- <button id="r" class="control skill" aria-label="R 반격"><b>R</b><small>45 DMG</small></button>
+ <button id="q" class="control skill" aria-label="Q 돌진 베기"><small>Q</small><b>⚔</b></button>
+ <button id="e" class="control skill" aria-label="E 충격파"><small>E</small><b>✺</b></button>
+ <button id="r" class="control skill" aria-label="R 반격"><small>R</small><b>⬡</b></button>
  <button id="pause" class="control" aria-label="일시정지">Ⅱ</button>
  <div id="cooldowns"><span id="cq" class="cool">Q READY</span><span id="ce" class="cool">E READY</span><span id="cr" class="cool">R READY</span></div>
 </div>
@@ -66,7 +66,7 @@ const player={x:450,y:490,hp:100,max:100,dir:'up',speed:205,inv:0,dash:0,guard:0
 const boss={x:450,y:245,hp:300,max:300,dir:'down',state:'idle',timer:1.6,attack:0,phase:0};
 const move={x:0,y:0};const pointers=new Map(),keys={};const cd={q:0,e:0,r:0};const fx=[],sparks=[];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function resize(){const r=game.getBoundingClientRect();D=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;canvas.width=Math.round(W*D);canvas.height=Math.round(H*D);ctx.setTransform(D,0,0,D,0,0);player.x=clamp(player.x,35,W-35);player.y=clamp(player.y,100,H-35);boss.x=W/2;boss.y=H*.39}
+function resize(){const r=game.getBoundingClientRect();D=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;canvas.width=Math.round(W*D*.72);canvas.height=Math.round(H*D*.72);ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);player.x=clamp(player.x,35,W-35);player.y=clamp(player.y,100,H-35);boss.x=W/2;boss.y=H*.39}
 addEventListener('resize',resize);resize();
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');toastTime=1.05}
 function burst(x,y,color,n=12){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=25+Math.random()*150;sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,t:.25+Math.random()*.45,color,size:2+Math.random()*3})}}
@@ -126,10 +126,10 @@ function drawWarden(){if(boss.hp<=0)return;ctx.save();ctx.translate(boss.x,boss.
  // spines
  for(let i=0;i<11;i++){let a=Math.PI*1.08+i*.185;let x=Math.cos(a)*49,y=Math.sin(a)*42-5;ctx.fillStyle='#0a1021';ctx.beginPath();ctx.moveTo(x-7,y+8);ctx.lineTo(x,y-12-(i%3)*3);ctx.lineTo(x+8,y+9);ctx.closePath();ctx.fill();ctx.fillStyle='#66728e';ctx.fillRect(x-1,y-8,2,5)}
  // body silhouette
- ctx.fillStyle='#070b18';ctx.beginPath();ctx.ellipse(0,0,69,59,0,0,Math.PI*2);ctx.fill();
- const g=ctx.createRadialGradient(-22,-27,4,0,0,78);g.addColorStop(0,'#707991');g.addColorStop(.38,'#414a61');g.addColorStop(.78,'#222b40');g.addColorStop(1,'#0b1224');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,-5,64,54,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#050916';ctx.beginPath();ctx.ellipse(0,0,76,65,0,0,Math.PI*2);ctx.fill();
+ const g=ctx.createRadialGradient(-22,-27,4,0,0,78);g.addColorStop(0,'#707991');g.addColorStop(.38,'#414a61');g.addColorStop(.78,'#222b40');g.addColorStop(1,'#0b1224');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,-5,70,59,0,0,Math.PI*2);ctx.fill();
  // stone-like pixel patches
- for(let i=0;i<18;i++){let x=(hash(i,2)-.5)*95,y=(hash(i,5)-.5)*70;if(x*x/3600+y*y/2500<.72){ctx.fillStyle=i%2?'#56627a':'#303b52';ctx.globalAlpha=.45;ctx.fillRect(x,y,4+hash(i,7)*9,3+hash(i,8)*5)}}ctx.globalAlpha=1;
+ for(let i=0;i<38;i++){let x=(hash(i,2)-.5)*105,y=(hash(i,5)-.5)*78;if(x*x/3600+y*y/2500<.72){ctx.fillStyle=i%2?'#56627a':'#303b52';ctx.globalAlpha=.45;ctx.fillRect(x,y,4+hash(i,7)*9,3+hash(i,8)*5)}}ctx.globalAlpha=1;
  // huge blue eye socket and iris
  ctx.fillStyle='#070d20';ctx.beginPath();ctx.ellipse(7,-11,29,34,-.12,0,Math.PI*2);ctx.fill();
  const eg=ctx.createRadialGradient(0,-17,2,8,-10,34);eg.addColorStop(0,'#e0ffff');eg.addColorStop(.18,'#80edff');eg.addColorStop(.48,'#27baff');eg.addColorStop(.76,'#1553d5');eg.addColorStop(1,'#07143c');ctx.save();ctx.shadowColor='#39bfff';ctx.shadowBlur=20;ctx.fillStyle=eg;ctx.beginPath();ctx.ellipse(8,-10,24,29,-.12,0,Math.PI*2);ctx.fill();ctx.restore();
