@@ -65,7 +65,7 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-acti
 (()=>{'use strict';
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false}),game=document.getElementById('game');
 const bgCanvas=document.createElement('canvas'),bgCtx=bgCanvas.getContext('2d',{alpha:false});
-const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad.png?v=renderfix1';wardenSprite.onerror=()=>console.error('Warden sprite failed to load:',wardenSprite.src);
+const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad-24f.svg?v=1';wardenSprite.onerror=()=>console.error('Warden sprite sheet failed to load:',wardenSprite.src);
 const skillLayers={q:new Image(),e:new Image(),r:new Image()};
 for(const k of ['q','e','r']){skillLayers[k].src='./assets/skill-'+k+'-24.svg';skillLayers[k].onerror=()=>console.error('Player skill sprite failed:',k)}
 const skillAnims={q:null,e:null,r:null};
@@ -135,44 +135,36 @@ function drawFloor(){bgCtx.fillStyle='#090e20';bgCtx.fillRect(0,0,W,H);
  const pool=bgCtx.createRadialGradient(W*.5,H*.42,8,W*.5,H*.42,W*.43);pool.addColorStop(0,'#225bff20');pool.addColorStop(1,'#0b1b4400');bgCtx.fillStyle=pool;bgCtx.fillRect(0,65,W,H-65);const vg=bgCtx.createRadialGradient(W/2,H/2,H*.12,W/2,H/2,H*.8);vg.addColorStop(0,'#0000');vg.addColorStop(1,'#020511d9');bgCtx.fillStyle=vg;bgCtx.fillRect(0,0,W,H);
 }
 function drawWarden(){
- if(boss.hp<=0)return;
- const tell=boss.state==='tell',active=boss.state==='attack',duration=boss.attack===1?1.12:boss.attack===2?.62:.48;
- const p=active?clamp(1-boss.timer/duration,0,1):0,wind=tell?clamp(1-boss.timer/(boss.attack===1?1.22:1.05),0,1):0;
- const pulse=Math.sin(elapsed*3.1),bob=Math.sin(elapsed*4.2)*2.4;
- let sx=1+.018*pulse,sy=1-.012*pulse,lean=0,hop=0;
- if(boss.attack===1){const charge=tell?wind:Math.sin(p*Math.PI);sx+=tell?-.10*charge:.12*Math.sin(p*Math.PI);sy+=tell?.12*charge:-.08*Math.sin(p*Math.PI);lean=tell?-.035*charge:.045*Math.sin(p*Math.PI);hop=active?Math.sin(p*Math.PI)*-10:wind*3}
- else if(boss.attack===2){const inhale=tell?wind:Math.sin(p*Math.PI);sx+=tell?.10*inhale:-.08*inhale;sy-=tell?.07*inhale:-.12*inhale;lean=tell?-.025*inhale:.025*inhale;hop=active?Math.sin(p*Math.PI)*-5:wind*2}
- else if(boss.attack===0){sx+=tell?-.13*wind:active?.20*Math.sin(p*Math.PI):0;sy+=tell?.10*wind:active?-.14*Math.sin(p*Math.PI):0;hop=active?-Math.sin(p*Math.PI)*17:wind*4}
- const w=clamp(W*.22,150,270),h=w*(wardenSprite.naturalHeight/wardenSprite.naturalWidth||.67),bodyY=boss.y+bob+hop;
- ctx.save();ctx.globalAlpha=.52-Math.min(.22,Math.abs(hop)*.012);ctx.fillStyle='#020611';ctx.beginPath();ctx.ellipse(boss.x,boss.y+h*.34,w*(.45+Math.abs(hop)*.003),h*.095,0,0,Math.PI*2);ctx.fill();ctx.restore();
- ctx.save();ctx.translate(Math.round(boss.x),Math.round(bodyY));ctx.rotate(lean);ctx.scale(sx,sy);
- if(wardenSprite.complete&&wardenSprite.naturalWidth){ctx.imageSmoothingEnabled=false;ctx.drawImage(wardenSprite,-w/2,-h*.58,w,h);ctx.imageSmoothingEnabled=true}
- if(active&&boss.attack===0){const kick=Math.sin(p*Math.PI);ctx.fillStyle='#111a2a';ctx.strokeStyle='#050914';ctx.lineWidth=5;for(const side of [-1,1]){ctx.beginPath();ctx.ellipse(side*w*.31,h*.27+kick*8,13+kick*3,9,side*.25,0,Math.PI*2);ctx.fill();ctx.stroke()}}
+ if(boss.hp<=0||!wardenSprite.complete||!wardenSprite.naturalWidth)return;
+ const tell=boss.state==='tell',active=boss.state==='attack';
+ const tellMax=boss.attack===1?1.22:boss.attack===2?1.05:.82;
+ const attackMax=boss.attack===1?1.12:boss.attack===2?.62:.48;
+ const t=tell?clamp(1-boss.timer/tellMax,0,1):active?clamp(1-boss.timer/attackMax,0,1):0;
+ let frame=Math.floor(elapsed*6)%4;
+ if(tell){
+  if(boss.attack===1)frame=4+Math.min(3,Math.floor(t*4));
+  else if(boss.attack===2)frame=12+Math.min(2,Math.floor(t*3));
+  else frame=4+Math.min(1,Math.floor(t*2));
+ }else if(active){
+  if(boss.attack===1)frame=8+Math.min(3,Math.floor(t*4));
+  else if(boss.attack===2)frame=15+Math.min(3,Math.floor(t*4));
+  else frame=19+Math.min(4,Math.floor(t*5));
+ }
+ const col=frame%6,row=Math.floor(frame/6),cell=160;
+ const size=clamp(W*.28,178,286);
+ const bob=Math.sin(elapsed*4.5)*2.2;
+ const squash=tell?(boss.attack===0?1-.10*t:1+.035*t):active?(boss.attack===0?1+.12*Math.sin(t*Math.PI):1+.025*Math.sin(t*Math.PI)):1;
+ const stretch=tell?(boss.attack===0?1+.10*t:1-.025*t):active?(boss.attack===0?1-.12*Math.sin(t*Math.PI):1-.02*Math.sin(t*Math.PI)):1;
+ const lift=active&&boss.attack===0?-Math.sin(t*Math.PI)*13:Math.sin(elapsed*4.5)*1.8;
+ ctx.save();ctx.globalAlpha=.48;ctx.fillStyle='#020611';ctx.beginPath();ctx.ellipse(boss.x,boss.y+size*.29,size*.31,size*.065,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ ctx.save();ctx.translate(Math.round(boss.x),Math.round(boss.y+bob+lift));
+ const facing=Math.atan2(player.y-boss.y,player.x-boss.x);
+ ctx.rotate(facing-Math.PI);
+ ctx.scale(stretch,squash);
+ ctx.imageSmoothingEnabled=false;
+ ctx.drawImage(wardenSprite,col*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
+ ctx.imageSmoothingEnabled=true;
  ctx.restore();
- if((tell||active)&&boss.attack===1){
-  const extend=tell?.10+.12*wind:Math.sin(Math.min(1,p*1.08)*Math.PI*.82),sweep=active?-.34+p*.68:Math.sin(elapsed*8)*.025;
-  ctx.save();ctx.translate(boss.x,bodyY);ctx.rotate((boss.baseAngle||Math.PI/2)-Math.PI/2);
-  const stalkLen=h*(.25+.42*extend);
-  for(const side of [-1,1]){
-   const bx=side*w*.16,by=-h*.16,ex=side*(w*.20+stalkLen*.18)+sweep*stalkLen,ey=by-stalkLen;
-   ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#080d18';ctx.lineWidth=Math.max(12,w*.055);ctx.beginPath();ctx.moveTo(bx,by);ctx.bezierCurveTo(bx+side*w*.05,by-stalkLen*.30,ex-side*w*.10,ey+stalkLen*.28,ex,ey);ctx.stroke();
-   ctx.strokeStyle='#343e53';ctx.lineWidth=Math.max(7,w*.031);ctx.beginPath();ctx.moveTo(bx,by);ctx.bezierCurveTo(bx+side*w*.05,by-stalkLen*.30,ex-side*w*.10,ey+stalkLen*.28,ex,ey);ctx.stroke();
-   ctx.fillStyle='#101827';ctx.strokeStyle='#050914';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(ex,ey,Math.max(13,w*.065),Math.max(16,w*.078),sweep*.2,0,Math.PI*2);ctx.fill();ctx.stroke();
-   const lookX=clamp((player.x-boss.x)/220,-1,1)*4,lookY=clamp((player.y-boss.y)/220,-1,1)*4;
-   ctx.fillStyle='#0754cf';ctx.beginPath();ctx.ellipse(ex+lookX,ey+lookY,Math.max(8,w*.042),Math.max(11,w*.052),0,0,Math.PI*2);ctx.fill();
-   ctx.fillStyle='#20baff';ctx.beginPath();ctx.ellipse(ex+lookX-3,ey+lookY-3,Math.max(3,w*.015),Math.max(5,w*.022),0,0,Math.PI*2);ctx.fill();
-   ctx.fillStyle='#efffff';ctx.beginPath();ctx.ellipse(ex+lookX-4,ey+lookY-7,3,4,0,0,Math.PI*2);ctx.fill();
-  }ctx.restore();
- }
- if((tell||active)&&boss.attack===2){
-  const extend=tell?.10+.10*wind:Math.sin(Math.min(1,p*1.18)*Math.PI*.78),len=h*(.12+.72*extend),width=w*(.055+.055*extend);
-  ctx.save();ctx.translate(boss.x,bodyY);ctx.rotate((boss.baseAngle||Math.PI/2)-Math.PI/2);
-  const jaw=tell?.10+.10*wind:Math.sin(p*Math.PI);ctx.fillStyle='#080b15';ctx.strokeStyle='#050914';ctx.lineWidth=5;
-  ctx.beginPath();ctx.ellipse(0,h*.20+len*.05,width*1.22,width*.55+jaw*8,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-  ctx.beginPath();ctx.moveTo(-width*.55,h*.20);ctx.quadraticCurveTo(-width*.7,h*.20+len*.50,-width*.12,h*.20+len);ctx.quadraticCurveTo(0,h*.23+len*1.05,width*.12,h*.20+len);ctx.quadraticCurveTo(width*.7,h*.20+len*.50,width*.55,h*.20);ctx.closePath();
-  ctx.fillStyle='#183b82';ctx.fill();ctx.strokeStyle='#080d18';ctx.lineWidth=5;ctx.stroke();
-  ctx.beginPath();ctx.moveTo(-width*.20,h*.24);ctx.quadraticCurveTo(0,h*.27+len*.60,width*.20,h*.24+len*.92);ctx.strokeStyle='#65baff';ctx.lineWidth=Math.max(2,width*.12);ctx.stroke();ctx.restore();
- }
 }
 function drawWardenAttack(){}
 function drawSkillLayers(){
