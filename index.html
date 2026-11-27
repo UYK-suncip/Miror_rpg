@@ -66,6 +66,9 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-acti
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false}),game=document.getElementById('game');
 const bgCanvas=document.createElement('canvas'),bgCtx=bgCanvas.getContext('2d',{alpha:false});
 const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad.png?v=renderfix1';wardenSprite.onerror=()=>console.error('Warden sprite failed to load:',wardenSprite.src);
+const skillLayers={q:new Image(),e:new Image(),r:new Image()};
+for(const k of ['q','e','r']){skillLayers[k].src='./assets/skill-'+k+'-24.svg';skillLayers[k].onerror=()=>console.error('Skill sprite failed:',k)}
+const skillAnims={q:null,e:null,r:null};
 const joy=document.getElementById('joy'),stick=document.getElementById('stick');
 let W=900,H=620,D=1,last=0,elapsed=0,paused=false,toastTime=0,shake=0,ended=false;
 const player={x:450,y:490,hp:100,max:100,dir:'up',speed:205,inv:0,dash:0,guard:0,attack:0};
@@ -82,9 +85,10 @@ function hurtBoss(n){if(boss.hp<=0)return;boss.hp=Math.max(0,boss.hp-n);shake=5;
 function restart(){player.x=W*.5;player.y=H*.79;player.hp=100;player.inv=0;player.guard=0;player.attack=0;player.dash=0;player.dir='up';boss.x=W*.5;boss.y=H*.39;boss.hp=300;boss.state='idle';boss.timer=1.6;boss.attack=0;boss.squash=0;boss.eyeX=0;boss.eyeY=0;boss.baseAngle=0;boss.hit=false;for(const k of ['q','e','r'])cd[k]=0;fx.length=0;sparks.length=0;paused=false;ended=false;document.getElementById('endScreen').classList.remove('show');document.getElementById('pause').textContent='Ⅱ';toast('THE WARDEN AWAKENS')}
 document.getElementById('retry').addEventListener('click',restart);
 function skill(k){if(paused||player.hp<=0||boss.hp<=0||cd[k]>0)return;
- if(k==='q'){cd.q=2.1;player.dash=.24;const dx=boss.x-player.x,dy=boss.y-player.y,len=Math.hypot(dx,dy)||1;player.dir=direction(dx,dy);const ox=player.x,oy=player.y;player.x=clamp(player.x+dx/len*86,28,W-28);player.y=clamp(player.y+dy/len*86,95,H-28);player.attack=.2;if(Math.hypot(boss.x-player.x,boss.y-player.y)<160)hurtBoss(35);ring(ox,oy,'#d8f4ff',75);burst(player.x,player.y,'#c6edff',12)}
- if(k==='e'){cd.e=5;if(Math.hypot(boss.x-player.x,boss.y-player.y)<178)hurtBoss(25);ring(player.x,player.y,'#5daeff',190);burst(player.x,player.y,'#64aaff',26)}
- if(k==='r'){cd.r=4.5;player.guard=.78;ring(player.x,player.y,'#a2eaff',68);toast('COUNTER STANCE')}
+ skillAnims[k]={time:0,duration:k==='q'?.42:k==='e'?.58:.78};
+ if(k==='q'){cd.q=2.1;player.dash=.24;const dx=boss.x-player.x,dy=boss.y-player.y,len=Math.hypot(dx,dy)||1;player.dir=direction(dx,dy);player.x=clamp(player.x+dx/len*86,28,W-28);player.y=clamp(player.y+dy/len*86,95,H-28);player.attack=.2;if(Math.hypot(boss.x-player.x,boss.y-player.y)<160)hurtBoss(35)}
+ if(k==='e'){cd.e=5;if(Math.hypot(boss.x-player.x,boss.y-player.y)<178)hurtBoss(25)}
+ if(k==='r'){cd.r=4.5;player.guard=.78;toast('COUNTER STANCE')}
 }
 function direction(x,y){return Math.abs(x)>Math.abs(y)?(x>0?'right':'left'):(y>0?'down':'up')}
 function joyPoint(e){const r=joy.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),limit=r.width*.32,len=Math.hypot(dx,dy)||1,m=Math.min(1,limit/len);move.x=dx/len*m;move.y=dy/len*m;stick.style.left=(50+move.x*32)+'%';stick.style.top=(50+move.y*32)+'%'}
@@ -99,7 +103,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(['q',
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function damagePlayer(amount=18){if(player.guard>0){hurtBoss(45);player.guard=0;burst(player.x,player.y,'#b3f2ff',24);toast('COUNTER!');return}if(player.inv>0)return;player.hp=Math.max(0,player.hp-amount);player.inv=.9;shake=8;toast('− '+amount+' VITALITY');if(!player.hp)setTimeout(()=>finishGame(false),250)}
 function pointSegmentDistance(px,py,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,l2=dx*dx+dy*dy||1,t=clamp(((px-x1)*dx+(py-y1)*dy)/l2,0,1);return Math.hypot(px-(x1+t*dx),py-(y1+t*dy))}
-function update(dt){if(paused||ended)return;elapsed+=dt;for(const k in cd)cd[k]=Math.max(0,cd[k]-dt);player.inv=Math.max(0,player.inv-dt);player.guard=Math.max(0,player.guard-dt);player.dash=Math.max(0,player.dash-dt);player.attack=Math.max(0,player.attack-dt);
+function update(dt){if(paused||ended)return;elapsed+=dt;for(const k in cd)cd[k]=Math.max(0,cd[k]-dt);player.inv=Math.max(0,player.inv-dt);player.guard=Math.max(0,player.guard-dt);player.dash=Math.max(0,player.dash-dt);player.attack=Math.max(0,player.attack-dt);for(const k of ['q','e','r'])if(skillAnims[k]){skillAnims[k].time+=dt;if(skillAnims[k].time>=skillAnims[k].duration)skillAnims[k]=null}
  let ix=move.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),iy=move.y+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0),l=Math.hypot(ix,iy);if(l>1){ix/=l;iy/=l;l=1}if(l>.08){player.dir=direction(ix,iy);player.x+=ix*player.speed*dt*(player.dash?2.4:1);player.y+=iy*player.speed*dt*(player.dash?2.4:1)}
  player.x=clamp(player.x,28,W-28);player.y=clamp(player.y,95,H-28);
  if(boss.hp>0){const ex=clamp((player.x-boss.x)/180,-1,1)*7,ey=clamp((player.y-boss.y)/180,-1,1)*7;boss.eyeX+=(ex-boss.eyeX)*Math.min(1,dt*7);boss.eyeY+=(ey-boss.eyeY)*Math.min(1,dt*7);const targetSquash=boss.state==='tell'?(boss.attack===0?1:boss.attack===1?.82:1.18):boss.state==='attack'?(boss.attack===0?-.35:boss.attack===1?-.12:.72):0;boss.squash+=(targetSquash-boss.squash)*Math.min(1,dt*(boss.state==='attack'?16:6));boss.timer-=dt;
@@ -129,6 +133,20 @@ function drawFloor(){bgCtx.fillStyle='#090e20';bgCtx.fillRect(0,0,W,H);
  for(const side of [0,1]){const x=side?W-72:72;for(let y=H*.18;y<H*.86;y+=H*.36){bgCtx.fillStyle='#070b18';bgCtx.fillRect(x-27,y-30,54,106);bgCtx.fillStyle='#242e4c';bgCtx.fillRect(x-22,y-35,44,100);bgCtx.fillStyle='#566587';bgCtx.fillRect(x-28,y-40,56,9);bgCtx.fillRect(x-32,y+54,64,12);bgCtx.fillStyle='#101a35';bgCtx.fillRect(x-12,y-20,24,65);bgCtx.save();bgCtx.shadowColor='#1c72ff';bgCtx.shadowBlur=25+Math.sin(elapsed*5)*6;bgCtx.fillStyle='#1e5dff';bgCtx.beginPath();bgCtx.moveTo(x,y-34);bgCtx.lineTo(x-8,y-8);bgCtx.lineTo(x-4,y+1);bgCtx.lineTo(x+4,y+1);bgCtx.lineTo(x+9,y-10);bgCtx.closePath();bgCtx.fill();bgCtx.fillStyle='#b8f5ff';bgCtx.fillRect(x-2,y-24,4,18);bgCtx.restore()}}
  for(let i=0;i<65;i++){let x=hash(i,20)*W,y=90+hash(i,30)*(H-105);if(Math.abs(x-W/2)<W*.17&&Math.abs(y-H*.4)<H*.12)continue;let s=5+hash(i,4)*17;bgCtx.fillStyle='#080d1b';bgCtx.fillRect(x+3,y+4,s,s*.55);bgCtx.fillStyle=i%2?'#35415f':'#424d6b';bgCtx.beginPath();bgCtx.moveTo(x,y);bgCtx.lineTo(x+s,y+2);bgCtx.lineTo(x+s*.8,y+s*.55);bgCtx.lineTo(x+2,y+s*.7);bgCtx.closePath();bgCtx.fill();bgCtx.fillStyle='#7785a522';bgCtx.fillRect(x+2,y+1,s*.45,2)}
  const pool=bgCtx.createRadialGradient(W*.5,H*.42,8,W*.5,H*.42,W*.43);pool.addColorStop(0,'#225bff20');pool.addColorStop(1,'#0b1b4400');bgCtx.fillStyle=pool;bgCtx.fillRect(0,65,W,H-65);const vg=bgCtx.createRadialGradient(W/2,H/2,H*.12,W/2,H/2,H*.8);vg.addColorStop(0,'#0000');vg.addColorStop(1,'#020511d9');bgCtx.fillStyle=vg;bgCtx.fillRect(0,0,W,H);
+}
+function drawSkillLayers(){
+ const angles={up:0,right:Math.PI/2,down:Math.PI,left:-Math.PI/2};
+ for(const k of ['q','e','r']){
+  const a=skillAnims[k],img=skillLayers[k];if(!a||!img.complete||!img.naturalWidth)continue;
+  const p=clamp(a.time/a.duration,0,.999),frame=Math.min(23,Math.floor(p*24)),sx=(frame%6)*128,sy=Math.floor(frame/6)*128;
+  const size=k==='q'?190:k==='e'?310:208;
+  ctx.save();ctx.translate(Math.round(player.x),Math.round(player.y));
+  if(k!=='e')ctx.rotate(angles[player.dir]||0);
+  const fade=k==='q'?1:k==='e'?1:Math.min(1,(1-p)*5+.25);
+  ctx.globalAlpha=fade;ctx.globalCompositeOperation='screen';ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(img,sx,sy,128,128,-size/2,-size/2,size,size);
+  ctx.restore()
+ }
 }
 function drawWarden(){
  if(boss.hp<=0)return;
@@ -170,7 +188,7 @@ right:[".....KKKKKK.....","....KHHHHHHK....","...KHHHHHHHHK...","...KHHHFFHHHK..
 const palette={K:'#080d1b',H:'#344d77',F:'#d9efff',B:'#18365c',C:'#4d82b6',S:'#a9dfff'};ctx.save();ctx.translate(Math.round(player.x),Math.round(player.y+Math.sin(elapsed*10)*1.2));ctx.fillStyle='#030714';ctx.beginPath();ctx.ellipse(0,19,23,8,0,0,Math.PI*2);ctx.fill();const frame=Math.floor(elapsed*9)%2,scale=3.1,sprite=rows[player.dir]||rows.up;for(let y=0;y<sprite.length;y++)for(let x=0;x<sprite[y].length;x++){const ch=sprite[y][x];if(ch==='.')continue;ctx.fillStyle=palette[ch]||'#fff';let px=(x-8)*scale,py=(y-8)*scale;if(frame&&y>=12&&y<=14&&x<8)py+=1;ctx.fillRect(Math.round(px),Math.round(py),scale,scale)}ctx.fillStyle='#9edcff';if(player.dir==='left'){ctx.fillRect(-29,1,15,3);ctx.fillRect(-30,-2,3,9)}else if(player.dir==='right'){ctx.fillRect(14,1,15,3);ctx.fillRect(27,-2,3,9)}else{ctx.fillRect(18,8,3,15);ctx.fillStyle='#e8f8ff';ctx.fillRect(17,7,5,3)}if(player.attack>0){ctx.save();ctx.strokeStyle='#d7f5ff';ctx.lineWidth=4;ctx.shadowColor='#7ccfff';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(0,0,43,player.dir==='left'?1.5:player.dir==='right'?-1:0,player.dir==='left'?4.3:player.dir==='right'?2.2:Math.PI*1.5);ctx.stroke();ctx.restore()}if(player.guard>0){ctx.save();ctx.strokeStyle='#9beaff';ctx.lineWidth=3;ctx.shadowColor='transparent';ctx.beginPath();ctx.arc(0,0,38,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#66cfff22';ctx.fill();ctx.restore()}if(player.inv>0&&Math.floor(elapsed*18)%2===0)ctx.globalAlpha=.35;ctx.restore()
 }
 function render(){ctx.save();ctx.fillStyle='#090e20';ctx.fillRect(0,0,W,H);if(bgCanvas.width&&bgCanvas.height)ctx.drawImage(bgCanvas,0,0,W,H);if(shake>0){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake=Math.max(0,shake-.5)}if(boss.hp>0){if(boss.state==='tell'&&boss.attack===0){ctx.save();ctx.strokeStyle='#ff668e';ctx.lineWidth=3;ctx.shadowColor='transparent';ctx.globalAlpha=.5+Math.sin(elapsed*17)*.3;ctx.beginPath();ctx.arc(boss.x,boss.y,95,0,Math.PI*2);ctx.stroke();ctx.restore()}drawWarden();drawWardenAttack()}
- drawHero();
+ drawHero();drawSkillLayers();
  for(const f of fx){ctx.save();ctx.globalAlpha=Math.max(0,f.t/.48);ctx.strokeStyle=f.color;ctx.lineWidth=4;ctx.shadowColor='transparent';ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.stroke();ctx.restore()}
  for(const s of sparks){ctx.save();ctx.globalAlpha=clamp(s.t/.35,0,1);ctx.fillStyle=s.color;ctx.fillRect(s.x,s.y,s.size,s.size);ctx.restore()}
  ctx.restore()}
