@@ -66,12 +66,9 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-acti
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false}),game=document.getElementById('game');
 const bgCanvas=document.createElement('canvas'),bgCtx=bgCanvas.getContext('2d',{alpha:false});
 const wardenSprite=new Image();wardenSprite.src='./assets/warden-toad.png?v=renderfix1';wardenSprite.onerror=()=>console.error('Warden sprite failed to load:',wardenSprite.src);
-const wardenAttackSprites={eyes:new Image(),tongue:new Image()};
 const skillLayers={q:new Image(),e:new Image(),r:new Image()};
 for(const k of ['q','e','r']){skillLayers[k].src='./assets/skill-'+k+'-24.svg';skillLayers[k].onerror=()=>console.error('Player skill sprite failed:',k)}
 const skillAnims={q:null,e:null,r:null};
-wardenAttackSprites.eyes.src='./assets/warden-eyes-24.svg';
-wardenAttackSprites.tongue.src='./assets/warden-tongue-24.svg';
 const joy=document.getElementById('joy'),stick=document.getElementById('stick');
 let W=900,H=620,D=1,last=0,elapsed=0,paused=false,toastTime=0,shake=0,ended=false;
 const player={x:450,y:490,hp:100,max:100,dir:'up',speed:205,inv:0,dash:0,guard:0,attack:0};
